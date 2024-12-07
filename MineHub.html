@@ -1,0 +1,974 @@
+<html><head><base href="https://minecraft.example.com/">
+    <meta charset="UTF-8">
+    <title>MineTrade Hub</title>
+    <style>
+        /* Update root variables for Minecraft theme */
+        :root {
+            --minecraft-dirt: #593d29;
+            --minecraft-stone: #7a7a7a;
+            --minecraft-grass: #3c5a24;
+            --minecraft-wood: #8b5e3c;
+        }
+
+        /* New base styles */
+        body {
+            background-color: var(--minecraft-dirt);
+            background-image: linear-gradient(45deg, 
+                rgba(0,0,0,0.2) 25%, 
+                transparent 25%, 
+                transparent 75%, 
+                rgba(0,0,0,0.2) 75%),
+            linear-gradient(45deg, 
+                rgba(0,0,0,0.2) 25%, 
+                transparent 25%, 
+                transparent 75%, 
+                rgba(0,0,0,0.2) 75%);
+            background-size: 64px 64px;
+            background-position: 0 0, 32px 32px;
+            margin: 0;
+            font-family: 'Minecraft', 'VT323', monospace;
+            color: #FFFFFF;
+        }
+
+        /* Updated login container */
+        .login-container {
+            background: var(--minecraft-stone);
+            border: 8px solid var(--minecraft-dirt);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 30px;
+            image-rendering: pixelated;
+            display: block; /* Ensure login is visible by default */
+        }
+
+        /* Updated main container layout */
+        #mainContainer {
+            display: none; /* Hide main container by default */
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            min-height: 100vh;
+            background: rgba(0,0,0,0.3);
+        }
+
+        /* Sidebar redesign */
+        .sidebar {
+            background: var(--minecraft-wood);
+            border-right: 4px solid var(--minecraft-dirt);
+            padding: 20px;
+            min-width: 250px;
+            box-shadow: inset -5px 0 15px rgba(0,0,0,0.3);
+        }
+
+        /* Updates panel redesign */
+        .updates-panel {
+            background: rgba(0,0,0,0.2);
+            padding: 20px;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+
+        .updates-container {
+            background: var(--minecraft-stone);
+            border: 6px solid var(--minecraft-dirt);
+            padding: 20px;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.4);
+        }
+
+        /* Online users panel redesign */
+        .online-users-panel {
+            background: var(--minecraft-stone);
+            border: 6px solid var(--minecraft-dirt);
+            padding: 20px;
+            min-width: 250px;
+        }
+
+        /* Update item styling */
+        .update-item {
+            background: rgba(0,0,0,0.3);
+            border: 4px solid var(--minecraft-dirt);
+            margin: 10px 0;
+            padding: 15px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        /* Button styling */
+        button {
+            background: var(--minecraft-grass);
+            border: 4px solid var(--minecraft-dirt);
+            color: white;
+            padding: 10px 20px;
+            font-family: 'Minecraft', 'VT323', monospace;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: inset 0 0 10px rgba(255,255,255,0.2);
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background: var(--minecraft-wood);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        /* Input styling */
+        input {
+            background: rgba(0,0,0,0.3);
+            border: 4px solid var(--minecraft-dirt);
+            color: white;
+            padding: 10px;
+            font-family: 'Minecraft', 'VT323', monospace;
+        }
+
+        /* Profile section */
+        .profile-section {
+            background: var(--minecraft-stone);
+            border: 6px solid var(--minecraft-dirt);
+            padding: 20px;
+            margin: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        }
+
+        .profile-pic {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 15px;
+            border: 4px solid var(--minecraft-dirt);
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s;
+            background: var(--minecraft-wood);
+        }
+
+        .profile-pic:hover {
+            transform: scale(1.05);
+        }
+
+        #userDisplay {
+            text-align: center;
+            font-size: 1.5em;
+            margin: 10px 0;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .creator-badge {
+            text-align: center;
+            color: gold;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            margin: 10px 0;
+        }
+
+        /* PixelCoins display styles */
+        .pixel-coins {
+            background: var(--minecraft-wood);
+            border: 4px solid var(--minecraft-dirt);
+            padding: 8px 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 1.2em;
+            color: gold;
+            text-shadow: 2px 2px 2px rgba(0,0,0,0.5);
+        }
+
+        .pixel-coins:before {
+            content: "💰";
+            font-size: 1.2em;
+        }
+
+        /* Dropdown menu styling */
+        .dropdown-menu {
+            display: none;
+            background: var(--minecraft-stone);
+            border: 4px solid var(--minecraft-dirt);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .dropdown-menu a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            margin: 5px 0;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .dropdown-menu a:hover {
+            background: var(--minecraft-wood);
+        }
+
+        /* Online users styling */
+        .online-users-panel h3 {
+            color: #ffffff;
+            text-align: center;
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .online-user {
+            background: var(--minecraft-wood);
+            border: 4px solid var(--minecraft-dirt);
+            margin: 10px 0;
+            padding: 12px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: transform 0.2s;
+        }
+
+        .online-user:hover {
+            transform: translateX(5px);
+        }
+
+        .online-user-avatar {
+            width: 45px;
+            height: 45px;
+            border: 3px solid var(--minecraft-dirt);
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--minecraft-stone);
+        }
+
+        .user-info {
+            flex-grow: 1;
+        }
+
+        .online-user-name {
+            font-size: 1.1em;
+            color: #ffffff;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .user-role {
+            font-size: 0.9em;
+            padding: 3px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .user-role.creator {
+            background: rgba(255, 215, 0, 0.3);
+            color: gold;
+        }
+
+        .user-role.member {
+            background: rgba(255, 255, 255, 0.1);
+            color: #cccccc;
+        }
+
+        /* Update toggle buttons */
+        .toggle-btn {
+            position: absolute;
+            top: 20px;
+            background: var(--minecraft-wood);
+            border: 4px solid var(--minecraft-dirt);
+            color: white;
+            padding: 8px 12px;
+            cursor: pointer;
+            z-index: 100;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        #toggleSidebar {
+            left: 20px;
+        }
+
+        #toggleOnlineUsers {
+            right: 20px;
+        }
+
+        .toggle-btn:hover {
+            background: var(--minecraft-grass);
+            transform: scale(1.1);
+        }
+
+        .kit-item {
+            background: var(--minecraft-wood);
+            border: 4px solid var(--minecraft-dirt);
+            margin: 10px 0;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 8px;
+        }
+
+        .kit-item button {
+            background: var(--minecraft-grass);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-family: 'Minecraft', 'VT323', monospace;
+            transition: all 0.2s;
+        }
+
+        .kit-item button:hover {
+            background: var(--minecraft-stone);
+            transform: scale(1.05);
+        }
+
+        .kit-price {
+            color: gold;
+            font-weight: bold;
+        }
+
+        .kit-price.free {
+            color: #4CAF50;
+        }
+
+        /* Add these styles to the existing CSS section to enhance the event announcement */
+        .update-item:nth-child(2) {
+            background: linear-gradient(45deg, var(--minecraft-wood), var(--minecraft-stone));
+            border: 4px solid var(--minecraft-grass);
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 5px var(--minecraft-grass),
+                            0 0 10px var(--minecraft-grass);
+            }
+            to {
+                box-shadow: 0 0 10px var(--minecraft-grass),
+                            0 0 20px var(--minecraft-grass);
+            }
+        }
+
+        .update-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .update-description {
+            white-space: pre-line;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .update-link {
+            display: inline-block;
+            background: var(--minecraft-grass);
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .update-link:hover {
+            background: var(--minecraft-wood);
+            transform: translateY(-2px);
+        }
+
+        /* Store container styles */
+        .store-container {
+            display: none;
+            background: var(--minecraft-stone);
+            padding: 20px;
+            margin: 20px;
+            border: 6px solid var(--minecraft-dirt);
+            border-radius: 8px;
+            grid-column: 2;
+        }
+
+        .menu-button {
+            margin-bottom: 20px;
+            background: var(--minecraft-grass);
+            border: 4px solid var(--minecraft-dirt);
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: 'Minecraft', 'VT323', monospace;
+        }
+
+        .store-section {
+            background: rgba(0,0,0,0.2);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .store-header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container" id="loginContainer">
+        <h2>MineTrade Hub</h2>
+        <input type="text" id="username" placeholder="Username">
+        <br>
+        <input type="password" id="password" placeholder="Password">
+        <br>
+        <button onclick="login()">Iniciar Sesión</button>
+    </div>
+
+    <div class="main-container" id="mainContainer">
+        <button id="toggleSidebar" class="toggle-btn">☰</button>
+        <button id="toggleOnlineUsers" class="toggle-btn">👥</button>
+        <div class="sidebar">
+            <div class="profile-section">
+                <div class="profile-pic" id="profilePic" onclick="toggleDropdown()">
+                    <svg viewBox="0 0 100 100" width="100" height="100">
+                        <defs>
+                            <linearGradient id="avatarGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#4CAF50"/>
+                                <stop offset="100%" style="stop-color:#45a049"/>
+                            </linearGradient>
+                        </defs>
+                        <circle cx="50" cy="40" r="25" fill="url(#avatarGradient)"/>
+                        <circle cx="50" cy="100" r="40" fill="url(#avatarGradient)"/>
+                    </svg>
+                </div>
+                <h3 id="userDisplay"></h3>
+                <div id="creatorBadge"></div>
+                <div class="pixel-coins" id="pixelCoinsDisplay">0 PX</div>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="javascript:void(0)" onclick="changePicture()">Cambiar foto de perfil</a>
+                    <a href="javascript:void(0)" onclick="showNotifications()">Bandeja de notificaciones</a>
+                    <a href="javascript:void(0)" onclick="showStore()">Tienda</a>
+                    <a href="javascript:void(0)" onclick="logout()">Cerrar sesión</a>
+                </div>
+            </div>
+        </div>
+        <div class="updates-panel">
+            <div class="updates-container">
+                <h2 class="update-header">Actualizaciones de Minecraft Bedrock</h2>
+                <div id="updates-list">
+                    <!-- Updates will be populated here -->
+                </div>
+            </div>
+        </div>
+        <div class="online-users-panel">
+            <h3>Usuarios en línea</h3>
+            <div id="onlineUsersList">
+                <!-- Online users will be added here dynamically -->
+            </div>
+        </div>
+        <div class="store-container" id="storeContainer">
+            <button class="menu-button" onclick="showMainMenu()">Menú Principal</button>
+            <div class="store-section">
+                <h2 class="store-header">Tienda de Kits</h2>
+                
+                <div class="kit-category">
+                    <h3>KITS PVP ACTUALIZADO</h3>
+                    <div class="kit-item">
+                        <span class="kit-name">Kit PVP Normal</span>
+                        <span class="kit-price free">GRATIS</span>
+                        <button onclick="purchaseKit('Kit PVP Normal', 'GRATIS')">Comprar</button>
+                    </div>
+                    <div class="kit-item">
+                        <span class="kit-name">Kit PVP Insano</span>
+                        <span class="kit-price">800 PX</span>
+                        <button onclick="purchaseKit('Kit PVP Insano', '800')">Comprar</button>
+                    </div>
+                    <div class="kit-item">
+                        <span class="kit-name">Kit PVP Pro</span>
+                        <span class="kit-price">700 PX</span>
+                        <button onclick="purchaseKit('Kit PVP Pro', '700')">Comprar</button>
+                    </div>
+                    <div class="kit-item">
+                        <span class="kit-name">Kit PVP Toxic</span>
+                        <span class="kit-price">200000 PX</span>
+                        <button onclick="purchaseKit('Kit PVP Toxic', '200000')">Comprar</button>
+                    </div>
+                </div>
+                
+                <div class="kit-category">
+                    <h3>KITS DE CONSTRUCCIÓN</h3>
+                    <div class="kit-item">
+                        <span class="kit-name">Kit Normal</span>
+                        <span class="kit-price free">GRATIS</span>
+                        <button onclick="purchaseKit('Kit Normal', 'GRATIS')">Comprar</button>
+                    </div>
+                    <div class="kit-item">
+                        <span class="kit-name">Kit Avanzado</span>
+                        <span class="kit-price">300 PX</span>
+                        <button onclick="purchaseKit('Kit Avanzado', '300')">Comprar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const onlineUsers = new Set();
+
+        function addOnlineUser(username) {
+            if (!onlineUsers.has(username)) {
+                onlineUsers.add(username);
+                // Store online status globally
+                localStorage.setItem('onlineUsers', JSON.stringify(Array.from(onlineUsers)));
+                updateOnlineUsersList();
+                
+                const loggedInUsername = localStorage.getItem('username');
+                if (username === loggedInUsername) {
+                    const currentProfilePic = localStorage.getItem('profilePic');
+                    if (currentProfilePic) {
+                        localStorage.setItem(`profilePic_${username}`, currentProfilePic);
+                    }
+                }
+            }
+        }
+
+        function removeOnlineUser(username) {
+            if (onlineUsers.has(username)) {
+                onlineUsers.delete(username);
+                // Update global online users
+                localStorage.setItem('onlineUsers', JSON.stringify(Array.from(onlineUsers)));
+                updateOnlineUsersList();
+            }
+        }
+
+        // Modify window.onload to include global online users initialization
+        window.onload = function() {
+            document.getElementById('storeContainer').style.display = 'none';
+            document.getElementById('mainContainer').style.display = 'none';
+            
+            // Load global online users
+            const savedOnlineUsers = JSON.parse(localStorage.getItem('onlineUsers') || '[]');
+            savedOnlineUsers.forEach(user => onlineUsers.add(user));
+            
+            const savedUsername = localStorage.getItem('username');
+            const savedPassword = localStorage.getItem('password');
+            const savedProfilePic = localStorage.getItem('profilePic');
+            
+            if (savedUsername && savedPassword) {
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('mainContainer').style.display = 'grid';
+                document.getElementById('userDisplay').textContent = savedUsername;
+                updateCreatorBadge(savedUsername);
+                updatePixelCoins(savedUsername);
+                addOnlineUser(savedUsername);
+                addWelcomeNotification();
+
+                if (savedProfilePic) {
+                    document.getElementById('profilePic').innerHTML = `
+                        <img src="${savedProfilePic}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                    `;
+                }
+                
+                loadUpdates();
+            } else {
+                document.getElementById('loginContainer').style.display = 'block';
+                document.getElementById('mainContainer').style.display = 'none';
+            }
+            
+            initializeToggleButtons();
+            setInterval(checkOnlineUsers, 5000);
+        };
+
+        // Update checkOnlineUsers function for global tracking
+        function checkOnlineUsers() {
+            const currentTime = new Date().getTime();
+            const username = localStorage.getItem('username');
+            
+            if (username) {
+                localStorage.setItem(`lastActive_${username}`, currentTime);
+                
+                // Check all users globally
+                const savedOnlineUsers = JSON.parse(localStorage.getItem('onlineUsers') || '[]');
+                savedOnlineUsers.forEach(user => {
+                    const lastActive = parseInt(localStorage.getItem(`lastActive_${user}`) || '0');
+                    if (currentTime - lastActive > 10000) {
+                        removeOnlineUser(user);
+                    } else {
+                        addOnlineUser(user);
+                    }
+                });
+            }
+        }
+
+        // Add cleanup on logout
+        function logout() {
+            const username = localStorage.getItem('username');
+            removeOnlineUser(username);
+            
+            const coins = localStorage.getItem(`pixelCoins_${username}`);
+            
+            localStorage.removeItem('username');
+            localStorage.removeItem('password');
+            localStorage.removeItem('profilePic');
+            localStorage.removeItem(`lastActive_${username}`);
+            
+            document.getElementById('loginContainer').style.display = 'block';
+            document.getElementById('mainContainer').style.display = 'none';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            
+            document.getElementById('profilePic').innerHTML = `
+                <svg viewBox="0 0 100 100" width="100" height="100">
+                    <defs>
+                        <linearGradient id="avatarGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#4CAF50"/>
+                            <stop offset="100%" style="stop-color:#45a049"/>
+                        </linearGradient>
+                    </defs>
+                    <circle cx="50" cy="40" r="25" fill="url(#avatarGradient)"/>
+                    <circle cx="50" cy="100" r="40" fill="url(#avatarGradient)"/>
+                </svg>
+            `;
+            document.getElementById('creatorBadge').innerHTML = '';
+            document.getElementById('pixelCoinsDisplay').textContent = '0 PX';
+        }
+
+        function updateOnlineUsersList() {
+            const onlineUsersList = document.getElementById('onlineUsersList');
+            onlineUsersList.innerHTML = '';
+            
+            onlineUsers.forEach(username => {
+                const userElement = document.createElement('div');
+                userElement.className = 'online-user';
+                
+                const userProfilePic = localStorage.getItem(`profilePic_${username}`);
+                const userPassword = localStorage.getItem('password');
+                
+                const isCreator = username === '.null_xeno' && userPassword === '!Cr34tor$P@ssw0rd2024';
+                const roleHtml = isCreator ? 
+                    `<div class="user-role creator">👑 CREADOR</div>` : 
+                    `<div class="user-role member">MIEMBRO</div>`;
+
+                userElement.innerHTML = `
+                    <div class="online-user-avatar">
+                        ${userProfilePic ? 
+                            `<img src="${userProfilePic}" alt="${username}" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;">` :
+                            `<svg viewBox="0 0 40 40" width="40" height="40">
+                                <circle cx="20" cy="15" r="8" fill="#fff"/>
+                                <circle cx="20" cy="35" r="12" fill="#fff"/>
+                            </svg>`
+                        }
+                    </div>
+                    <div class="user-info">
+                        <span class="online-user-name">${username}</span>
+                        ${roleHtml}
+                    </div>
+                    <div class="online-status"></div>
+                `;
+                onlineUsersList.appendChild(userElement);
+            });
+        }
+
+        function updateCreatorBadge(username) {
+            const creatorBadge = document.getElementById('creatorBadge');
+            const password = localStorage.getItem('password');
+            
+            if (username === '.null_xeno' && password === '!Cr34tor$P@ssw0rd2024') {
+                creatorBadge.className = 'creator-badge';
+                creatorBadge.innerHTML = '👑 CREADOR 👑';
+            } else {
+                creatorBadge.innerHTML = '';
+            }
+        }
+
+        function loadUpdates() {
+            const updatesList = document.getElementById('updates-list');
+            
+            const updates = [
+                {
+                    title: "Minecraft Bedrock 1.20.50",
+                    description: "Nueva actualización disponible con mejoras en el rendimiento y corrección de errores.",
+                    link: "https://mcpebd.github.io/"
+                }
+            ];
+            
+            updatesList.innerHTML = updates.map(update => `
+                <div class="update-item">
+                    <div class="update-title">${update.title}</div>
+                    <div class="update-description">${update.description}</div>
+                    ${update.link ? `<a href="${update.link}" target="_blank" class="update-link">Ver más detalles</a>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function addWelcomeNotification() {
+            const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+            const username = localStorage.getItem('username');
+            
+            if (!notifications.some(n => n.username === username)) {
+                notifications.push({
+                    username: username,
+                    read: false,
+                    message: "¡Bienvenido al nuevo MineTrade Hub! Hemos rediseñado nuestra plataforma para darte una experiencia más Minecraft. Explora nuestras nuevas características y disfruta de la aventura!"
+                });
+                localStorage.setItem('notifications', JSON.stringify(notifications));
+            }
+        }
+
+        function updatePixelCoins(username) {
+            const coins = localStorage.getItem(`pixelCoins_${username}`) || '0';
+            document.getElementById('pixelCoinsDisplay').textContent = `${coins} PX`;
+        }
+
+        async function purchaseKit(kitName, price) {
+            const username = localStorage.getItem('username');
+            const currentCoins = parseInt(localStorage.getItem(`pixelCoins_${username}`) || '0');
+            
+            if (price === 'GRATIS') {
+                // Free kit
+                showPurchaseMessage(`¡Has obtenido el ${kitName} gratuitamente!`, true);
+                notifyDiscord(username, kitName, 'GRATIS');
+                return;
+            }
+            
+            const priceValue = parseInt(price);
+            
+            if (currentCoins >= priceValue) {
+                // Has enough coins
+                const newBalance = currentCoins - priceValue;
+                localStorage.setItem(`pixelCoins_${username}`, newBalance.toString());
+                updatePixelCoins(username);
+                showPurchaseMessage(`¡Has comprado el ${kitName} por ${price} PX!`, true);
+                notifyDiscord(username, kitName, price);
+            } else {
+                // Not enough coins
+                showPurchaseMessage(`No tienes suficientes PixelCoins para comprar ${kitName}. Necesitas ${price} PX y tienes ${currentCoins} PX.`, false);
+            }
+        }
+
+        function showPurchaseMessage(message, success) {
+            const messageDiv = document.createElement('div');
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: ${success ? 'rgba(76, 175, 80, 0.9)' : 'rgba(244, 67, 54, 0.9)'};
+                color: white;
+                padding: 20px;
+                border-radius: 8px;
+                z-index: 1000;
+                font-family: 'Minecraft', 'VT323', monospace;
+                text-align: center;
+                border: 4px solid var(--minecraft-dirt);
+                box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            `;
+            messageDiv.textContent = message;
+            
+            document.body.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
+        }
+
+        async function notifyDiscord(username, kitName, price) {
+            const webhookUrl = 'https://discord.com/api/webhooks/1315033651913691187/-1zv7GXT1NFk-ySooS-ytwGJnb-G_VQ-U3DQIY7Vv46ELS1ORmavn2lBikxNTgyfkI7j';
+            
+            const message = {
+                content: null,
+                embeds: [{
+                    title: "Nueva Compra de Kit",
+                    description: `**Usuario:** ${username}\n**Kit:** ${kitName}\n**Precio:** ${price}`,
+                    color: 5763719,
+                    timestamp: new Date().toISOString()
+                }]
+            };
+            
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(message)
+                });
+                
+                if (!response.ok) {
+                    console.error('Error sending webhook:', await response.text());
+                }
+            } catch (error) {
+                console.error('Error sending webhook:', error);
+            }
+        }
+
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('dropdownMenu');
+            const profilePic = document.getElementById('profilePic');
+            
+            if (!profilePic.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        function toggleDropdown() {
+            const dropdown = document.getElementById('dropdownMenu');
+            if (dropdown.style.display === 'block') {
+                dropdown.style.display = 'none';
+            } else {
+                dropdown.style.display = 'block';
+                dropdown.style.zIndex = '9999';
+            }
+        }
+
+        function changePicture() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const profilePicData = event.target.result;
+                    const username = localStorage.getItem('username');
+                    
+                    document.getElementById('profilePic').innerHTML = `
+                        <img src="${profilePicData}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                    `;
+                    
+                    localStorage.setItem('profilePic', profilePicData);
+                    localStorage.setItem(`profilePic_${username}`, profilePicData);
+                    
+                    updateOnlineUsersList();
+                };
+                reader.readAsDataURL(file);
+            };
+            input.click();
+        }
+
+        function showNotifications() {
+            const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+            const username = localStorage.getItem('username');
+            const userNotifications = notifications.filter(n => n.username === username);
+            
+            if (userNotifications.length === 0) {
+                alert('No tienes notificaciones nuevas');
+                return;
+            }
+
+            const dialog = document.createElement('div');
+            dialog.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0, 0, 0, 0.9);
+                padding: 30px;
+                border-radius: 15px;
+                color: white;
+                border: 3px solid #4CAF50;
+                box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+                z-index: 1000;
+                max-width: 500px;
+                width: 90%;
+            `;
+
+            dialog.innerHTML = userNotifications.map(notification => `
+                <div style="margin-bottom: 20px;">
+                    <p style="font-size: 1.2em; margin-bottom: 15px;">${notification.message}</p>
+                    ${!notification.read ? `
+                        <button onclick="markAsRead('${username}')" style="
+                            background: #4CAF50;
+                            color: white;
+                            border: none;
+                            padding: 10px 20px;
+                            border-radius: 5px;
+                            cursor: pointer;
+                            font-family: 'VT323', monospace;
+                            font-size: 1.1em;
+                        ">Mensaje leído</button>
+                    ` : '<p style="color: #4CAF50;">✓ Mensaje leído</p>'}
+                </div>
+            `).join('');
+
+            dialog.innerHTML += `
+                <button onclick="this.parentElement.remove()" style="
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    background: none;
+                    border: none;
+                    color: white;
+                    cursor: pointer;
+                    font-size: 1.5em;
+                ">×</button>
+            `;
+
+            document.body.appendChild(dialog);
+        }
+
+        function markAsRead(username) {
+            const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+            const updatedNotifications = notifications.map(n => {
+                if (n.username === username) {
+                    return { ...n, read: true };
+                }
+                return n;
+            });
+            localStorage.setItem('notifications', JSON.stringify(updatedNotifications));
+            showNotifications(); // Refresh the notifications display
+        }
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                alert('Por favor ingresa usuario y contraseña');
+                return;
+            }
+            
+            // Save credentials
+            localStorage.setItem('username', username);
+            localStorage.setItem('password', password);
+            
+            // Initialize PixelCoins if new user
+            if (!localStorage.getItem(`pixelCoins_${username}`)) {
+                localStorage.setItem(`pixelCoins_${username}`, '0');
+            }
+            
+            // Update UI
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('mainContainer').style.display = 'grid';
+            document.getElementById('userDisplay').textContent = username;
+            
+            // Add user to online users
+            addOnlineUser(username);
+            
+            // Update creator badge and coins
+            updateCreatorBadge(username);
+            updatePixelCoins(username);
+            
+            // Add welcome notification
+            addWelcomeNotification();
+            
+            // Load updates
+            loadUpdates();
+        }
+
+        function showStore() {
+            document.getElementById('storeContainer').style.display = 'block';
+            document.getElementsByClassName('updates-panel')[0].style.display = 'none';
+            document.getElementsByClassName('online-users-panel')[0].style.display = 'none';
+        }
+
+        function showMainMenu() {
+            document.getElementById('storeContainer').style.display = 'none';
+            document.getElementsByClassName('updates-panel')[0].style.display = 'block';
+            document.getElementsByClassName('online-users-panel')[0].style.display = 'block';
+        }
+    </script>
+</body></html>
