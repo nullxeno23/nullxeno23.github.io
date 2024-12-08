@@ -848,8 +848,10 @@
 
         function claimGhostyReward() {
             const username = localStorage.getItem('username');
+            const password = localStorage.getItem('password');
             
-            if (username !== 'Ghosty') {
+            // Check both username and password
+            if (username !== 'Ghosty' || password !== 'Ghosty777') {
                 showPurchaseMessage('Esta recompensa es exclusiva para el usuario Ghosty.', false);
                 return;
             }
