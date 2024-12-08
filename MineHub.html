@@ -779,9 +779,9 @@
             
             const updates = [
                 {
-                    id: 'mini-reward',
-                    title: "¡Regalo Especial para Mini!",
-                    description: "¡Hey Mini! Tienes 50 PX esperando por ti. ¡Reclámalos ahora!\n\nNOTA: Esta recompensa es exclusiva para el usuario 'Mini' y solo puede ser reclamada una vez.",
+                    id: 'ghosty-reward',
+                    title: "¡Regalo Especial para Ghosty!",
+                    description: "¡Hey Ghosty! Tienes 50 PX esperando por ti. ¡Reclámalos ahora!\n\nNOTA: Esta recompensa es exclusiva para el usuario 'Ghosty' y solo puede ser reclamada una vez.",
                     date: new Date().toLocaleDateString(),
                     claimButton: true
                 },
@@ -818,7 +818,7 @@
                             : ''}
                         ${update.claimButton ? `
                             <button 
-                                onclick="claimMiniReward()" 
+                                onclick="claimGhostyReward()" 
                                 class="claim-reward-btn" 
                                 style="
                                     background: linear-gradient(to bottom right, #c41e3a, #2d4a1c);
@@ -846,15 +846,15 @@
             }).join('');
         }
 
-        function claimMiniReward() {
+        function claimGhostyReward() {
             const username = localStorage.getItem('username');
             
-            if (username !== 'Mini') {
-                showPurchaseMessage('Esta recompensa es exclusiva para el usuario Mini.', false);
+            if (username !== 'Ghosty') {
+                showPurchaseMessage('Esta recompensa es exclusiva para el usuario Ghosty.', false);
                 return;
             }
             
-            const hasClaimedReward = localStorage.getItem('miniRewardClaimed');
+            const hasClaimedReward = localStorage.getItem('ghostyRewardClaimed');
             if (hasClaimedReward) {
                 showPurchaseMessage('¡Ya has reclamado esta recompensa!', false);
                 return;
@@ -865,7 +865,7 @@
             localStorage.setItem(`pixelCoins_${username}`, (currentCoins + 50).toString());
             
             // Mark as claimed
-            localStorage.setItem('miniRewardClaimed', 'true');
+            localStorage.setItem('ghostyRewardClaimed', 'true');
             
             // Update the display
             updatePixelCoins(username);
