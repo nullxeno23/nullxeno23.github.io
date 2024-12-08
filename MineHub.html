@@ -4,10 +4,10 @@
     <style>
         /* Update root variables for Minecraft theme */
         :root {
-            --minecraft-dirt: #593d29;
-            --minecraft-stone: #7a7a7a;
-            --minecraft-grass: #3c5a24;
-            --minecraft-wood: #8b5e3c;
+            --minecraft-dirt: #2d1810;
+            --minecraft-stone: #4a3228;
+            --minecraft-grass: #2d4a1c;
+            --minecraft-wood: #503224;
         }
 
         /* New base styles */
@@ -30,6 +30,32 @@
             color: #FFFFFF;
         }
 
+        /* Christmas lights animation at the top of the page */
+        .holiday-lights {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background: linear-gradient(
+                to right,
+                #ff0000 0%,
+                #00ff00 25%,
+                #ffff00 50%,
+                #0000ff 75%,
+                #ff0000 100%
+            );
+            animation: lightAnimation 2s linear infinite;
+            box-shadow: 0 0 20px rgba(255,255,255,0.5);
+            z-index: 1000;
+        }
+
+        @keyframes lightAnimation {
+            0% { filter: brightness(0.5); }
+            50% { filter: brightness(1.5); }
+            100% { filter: brightness(0.5); }
+        }
+
         /* Enhance login container */
         .login-container {
             background: linear-gradient(to bottom right, var(--minecraft-stone), rgba(0,0,0,0.5));
@@ -41,11 +67,22 @@
             padding: 30px;
             image-rendering: pixelated;
             display: block; /* Ensure login is visible by default */
+            border: 6px solid #c41e3a; /* Christmas red */
+            position: relative;
         }
 
-        @keyframes floatAnimation {
-            from { transform: translateY(0px); }
-            to { transform: translateY(-10px); }
+        .login-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(196, 30, 58, 0.1) 10px,
+                rgba(196, 30, 58, 0.1) 20px
+            );
+            border-radius: 10px;
         }
 
         /* Updated main container layout */
@@ -80,124 +117,13 @@
         .updates-container {
             border-radius: 12px;
             box-shadow: 0 15px 30px rgba(0,0,0,0.4);
-            background: rgba(0,0,0,0.6);
+        }
+
+        .updates-container {
+            background: linear-gradient(to bottom, rgba(89, 61, 41, 0.9), rgba(0, 0, 0, 0.8));
             border: 6px solid var(--minecraft-dirt);
             padding: 25px;
-        }
-
-        /* Update item styling */
-        .update-item {
-            background: rgba(0,0,0,0.4);
-            border: 4px solid var(--minecraft-dirt);
-            margin: 20px 0;
-            padding: 20px;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-        }
-
-        .update-title {
-            font-size: 1.4em;
-            color: #ffeb3b;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--minecraft-dirt);
-        }
-
-        .update-description {
-            color: #fff;
-            line-height: 1.6;
-            margin-bottom: 15px;
-            white-space: pre-wrap;
-            font-size: 1.1em;
-        }
-
-        .update-meta {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 2px solid var(--minecraft-dirt);
-        }
-
-        .update-timestamp {
-            color: #aaa;
-            font-size: 0.9em;
-        }
-
-        .update-author {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .author-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;
-            background: var(--minecraft-stone);
-            border: 2px solid var(--minecraft-dirt);
-        }
-
-        /* Update header */
-        .update-header {
-            text-align: center;
-            color: #ffeb3b;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-            margin-bottom: 30px;
-            font-size: 2em;
-            border-bottom: 4px solid var(--minecraft-dirt);
-            padding-bottom: 15px;
-        }
-
-        /* Enhanced reaction button */
-        .reaction-btn {
-            background: rgba(255,255,255,0.1);
-            border: 2px solid var(--minecraft-dirt);
-            border-radius: 25px;
-            padding: 8px 20px;
-            margin-top: 15px;
-            cursor: pointer;
-            color: white;
-            font-size: 1.2em;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .reaction-btn:hover {
-            background: rgba(255,255,255,0.2);
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(255,255,255,0.2);
-        }
-
-        .reaction-count {
-            background: rgba(0,0,0,0.3);
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.9em;
-            color: #fff;
-        }
-
-        /* Video container enhancement */
-        .video-container {
-            margin: 20px 0;
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-        }
-
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 10px;
-            border: 4px solid var(--minecraft-dirt);
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
         }
 
         /* Online users panel redesign */
@@ -210,9 +136,56 @@
             box-shadow: -5px 0 20px rgba(0,0,0,0.3);
         }
 
+        /* Update item styling */
+        .update-item {
+            border: 4px solid transparent !important;
+            background: var(--minecraft-dirt) !important;
+            margin: 20px 0;
+            padding: 2px !important;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .update-item::after {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            background: var(--minecraft-dirt);
+            z-index: -1;
+        }
+
+        .update-title {
+            font-size: 1.4em;
+            color: #c41e3a; /* Christmas red */
+            text-shadow: 0 0 5px rgba(196, 30, 58, 0.5); /* Christmas shadow */
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--minecraft-dirt);
+        }
+
+        .update-description {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #fff;
+            white-space: pre-wrap;
+            margin: 15px 0;
+        }
+
+        .update-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid var(--minecraft-dirt);
+            font-size: 0.9em;
+            color: #aaa;
+        }
+
         /* Button styling */
         button {
-            background: linear-gradient(to bottom right, var(--minecraft-grass), var(--minecraft-wood));
+            background: linear-gradient(to bottom right, #c41e3a, #2d4a1c) !important; /* Holiday button */
             border-radius: 8px;
             color: white;
             padding: 10px 20px;
@@ -220,14 +193,44 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             cursor: pointer;
-            box-shadow: inset 0 0 10px rgba(255,255,255,0.2);
+            box-shadow: 0 0 10px rgba(196, 30, 58, 0.5) !important; /* Christmas button shadow */
             transition: all 0.3s ease;
             font-size: 1.1em;
         }
 
         button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            box-shadow: 0 0 20px rgba(196, 30, 58, 0.8) !important; /* Christmas button hover */
+        }
+
+        /* Reaction button styles */
+        .reaction-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid var(--minecraft-dirt);
+            border-radius: 8px;
+            padding: 8px 20px;
+            margin-top: 15px;
+            cursor: pointer;
+            color: white;
+            font-size: 1.2em;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .reaction-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .reaction-count {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.9em;
+            color: #ffdd57;
         }
 
         /* Input styling */
@@ -251,11 +254,27 @@
         /* Profile section */
         .profile-section {
             background: linear-gradient(to bottom right, var(--minecraft-stone), rgba(0,0,0,0.4));
-            border: 6px solid var(--minecraft-dirt);
+            border: 6px solid #c41e3a; /* Christmas red */
             padding: 20px;
             margin: 20px;
             border-radius: 8px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            position: relative;
+        }
+
+        .profile-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(196, 30, 58, 0.1) 10px,
+                rgba(196, 30, 58, 0.1) 20px
+            );
+            border-radius: 4px;
+            z-index: 0;
         }
 
         .profile-pic {
@@ -407,29 +426,7 @@
 
         /* Update toggle buttons */
         .toggle-btn {
-            position: absolute;
-            top: 20px;
-            background: var(--minecraft-wood);
-            border: 4px solid var(--minecraft-dirt);
-            color: white;
-            padding: 8px 12px;
-            cursor: pointer;
-            z-index: 100;
-            border-radius: 4px;
-            transition: all 0.3s;
-        }
-
-        #toggleSidebar {
-            left: 20px;
-        }
-
-        #toggleOnlineUsers {
-            right: 20px;
-        }
-
-        .toggle-btn:hover {
-            background: var(--minecraft-grass);
-            transform: scale(1.1);
+            display: none; /* Hide the toggle buttons */
         }
 
         .kit-item {
@@ -474,31 +471,6 @@
             color: #4CAF50;
         }
 
-        /* Reaction button styles */
-        .reaction-btn {
-            background: rgba(255,255,255,0.1);
-            border-radius: 20px;
-            padding: 8px 15px;
-            margin-top: 10px;
-            cursor: pointer;
-            color: white;
-            font-size: 1.2em;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: all 0.3s ease;
-        }
-
-        .reaction-btn:hover {
-            background: rgba(255,255,255,0.2);
-            transform: scale(1.1);
-        }
-
-        .reaction-count {
-            font-size: 0.9em;
-            color: #ccc;
-        }
-
         /* Video container enhancement */
         iframe {
             border-radius: 10px;
@@ -507,6 +479,7 @@
     </style>
 </head>
 <body>
+    <div class="holiday-lights"></div>
     <div class="login-container" id="loginContainer">
         <h2>MineTrade Hub</h2>
         <input type="text" id="username" placeholder="Username">
@@ -517,8 +490,6 @@
     </div>
 
     <div class="main-container" id="mainContainer">
-        <button id="toggleSidebar" class="toggle-btn">☰</button>
-        <button id="toggleOnlineUsers" class="toggle-btn">👥</button>
         <div class="sidebar">
             <div class="profile-section">
                 <div class="profile-pic" id="profilePic" onclick="toggleDropdown()">
@@ -771,21 +742,20 @@
 
         function loadUpdates() {
             const updatesList = document.getElementById('updates-list');
+            
             const updates = [
                 {
                     id: 'update1',
                     title: "Minecraft Bedrock 1.20.50",
                     description: "Nueva actualización disponible con mejoras en el rendimiento y corrección de errores.",
-                    author: "Admin",
-                    timestamp: "Hace 2 días",
+                    date: new Date().toLocaleDateString(),
                     link: "https://mcpebd.github.io/"
                 },
                 {
                     id: 'update2',
                     title: "Minecraft: Expect the Unexpected",
                     description: `Nuevo evento en 19 días! 🎮✨\n\nVenture beyond the pale garden with community challenges, a live event, and more! Today you can uncover three eerie add-ons in Minecraft Marketplace that'll add even more unexpected moments to your gameplay:\n\n• Phantom Frames (free on Bedrock and also available as a Java mod)\n• Ghost Pets\n• Majestic Camping\n\nGather around a campfire to tell your best scary stories with the Majestic Camping add-on, and if things get too scary, bring in ghostly back up in with the Ghost Pets add-on! Just keep an eye on those Phantom Frames. Rumor has it, somebody walked through one and never came back...\n\nWhat surprises await tomorrow? Check back in to find out!`,
-                    author: "Minecraft Team",
-                    timestamp: "Hace 1 día",
+                    date: new Date().toLocaleDateString(),
                     video: "https://www.youtube.com/embed/x5yzJ7QCYA8"
                 }
             ];
@@ -800,23 +770,18 @@
                 return `
                     <div class="update-item" data-post-id="${update.id}">
                         <div class="update-title">${update.title}</div>
-                        <div class="update-meta">
-                            <div class="update-author">
-                                <div class="author-avatar"></div>
-                                <span>${update.author}</span>
-                            </div>
-                            <div class="update-timestamp">${update.timestamp}</div>
-                        </div>
                         <div class="update-description">${update.description}</div>
                         ${update.video ? 
-                            `<div class="video-container">
-                                <iframe src="${update.video}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                            </div>` 
+                            `<iframe width="100%" height="315" src="${update.video}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="margin: 15px 0;"></iframe>` 
                             : update.link ? `<a href="${update.link}" target="_blank" class="update-link">Ver más detalles</a>` 
                             : ''}
-                        <button class="reaction-btn" onclick="addReaction('${update.id}')" style="background: ${hasReacted ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)'}">
-                            👍 <span class="reaction-count">${postReactions.count}</span>
-                        </button>
+                        <div class="update-meta">
+                            <span class="post-date">📅 Publicado: ${update.date}</span>
+                            <button class="reaction-btn" onclick="addReaction('${update.id}')" 
+                                style="background: ${hasReacted ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)'}">
+                                👍 <span class="reaction-count">${postReactions.count}</span>
+                            </button>
+                        </div>
                     </div>
                 `;
             }).join('');
