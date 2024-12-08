@@ -570,7 +570,6 @@
             }
         }
 
-        // Modify window.onload to include global online users initialization
         window.onload = function() {
             document.getElementById('storeContainer').style.display = 'none';
             document.getElementById('mainContainer').style.display = 'none';
@@ -608,7 +607,6 @@
             setInterval(checkOnlineUsers, 5000);
         };
 
-        // Update checkOnlineUsers function for global tracking
         function checkOnlineUsers() {
             const currentTime = new Date().getTime();
             const username = localStorage.getItem('username');
@@ -616,7 +614,6 @@
             if (username) {
                 localStorage.setItem(`lastActive_${username}`, currentTime);
                 
-                // Check all users globally
                 const savedOnlineUsers = JSON.parse(localStorage.getItem('onlineUsers') || '[]');
                 savedOnlineUsers.forEach(user => {
                     const lastActive = parseInt(localStorage.getItem(`lastActive_${user}`) || '0');
@@ -629,7 +626,6 @@
             }
         }
 
-        // Add cleanup on logout
         function logout() {
             const username = localStorage.getItem('username');
             removeOnlineUser(username);
@@ -724,11 +720,10 @@
                     id: 'update2',
                     title: "Minecraft: Expect the Unexpected",
                     description: `Nuevo evento en 19 días! 🎮✨\n\nVenture beyond the pale garden with community challenges, a live event, and more! Today you can uncover three eerie add-ons in Minecraft Marketplace that'll add even more unexpected moments to your gameplay:\n\n• Phantom Frames (free on Bedrock and also available as a Java mod)\n• Ghost Pets\n• Majestic Camping\n\nGather around a campfire to tell your best scary stories with the Majestic Camping add-on, and if things get too scary, bring in ghostly back up in with the Ghost Pets add-on! Just keep an eye on those Phantom Frames. Rumor has it, somebody walked through one and never came back...\n\nWhat surprises await tomorrow? Check back in to find out!`,
-                    link: "https://www.youtube.com/watch?v=x5yzJ7QCYA8"
+                    video: "https://www.youtube.com/embed/x5yzJ7QCYA8"
                 }
             ];
             
-            // Get existing reactions
             const reactions = JSON.parse(localStorage.getItem('postReactions') || '{}');
             const username = localStorage.getItem('username');
             
@@ -740,7 +735,10 @@
                     <div class="update-item" data-post-id="${update.id}">
                         <div class="update-title">${update.title}</div>
                         <div class="update-description">${update.description}</div>
-                        ${update.link ? `<a href="${update.link}" target="_blank" class="update-link">Ver más detalles</a>` : ''}
+                        ${update.video ? 
+                            `<iframe width="100%" height="315" src="${update.video}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="margin: 15px 0;"></iframe>` 
+                            : update.link ? `<a href="${update.link}" target="_blank" class="update-link">Ver más detalles</a>` 
+                            : ''}
                         <button class="reaction-btn" onclick="addReaction('${update.id}')" style="background: ${hasReacted ? 'rgba(255,255,255,0.2)' : 'none'}">
                             👍 <span class="reaction-count">${postReactions.count}</span>
                         </button>
@@ -753,7 +751,6 @@
             const username = localStorage.getItem('username');
             if (!username) return;
             
-            // Get existing reactions from localStorage
             const reactions = JSON.parse(localStorage.getItem('postReactions') || '{}');
             if (!reactions[postId]) {
                 reactions[postId] = {
@@ -762,7 +759,6 @@
                 };
             }
             
-            // Toggle user's reaction
             const userIndex = reactions[postId].likes.indexOf(username);
             if (userIndex === -1) {
                 reactions[postId].likes.push(username);
@@ -772,10 +768,8 @@
                 reactions[postId].count--;
             }
             
-            // Save reactions
             localStorage.setItem('postReactions', JSON.stringify(reactions));
             
-            // Update UI
             const reactionBtn = document.querySelector(`[data-post-id="${postId}"] .reaction-count`);
             reactionBtn.textContent = reactions[postId].count;
             
@@ -811,7 +805,6 @@
             const currentCoins = parseInt(localStorage.getItem(`pixelCoins_${username}`) || '0');
             
             if (price === 'GRATIS') {
-                // Free kit
                 showPurchaseMessage(`¡Has obtenido el ${kitName} gratuitamente!`, true);
                 notifyDiscord(username, kitName, 'GRATIS');
                 return;
@@ -820,14 +813,12 @@
             const priceValue = parseInt(price);
             
             if (currentCoins >= priceValue) {
-                // Has enough coins
                 const newBalance = currentCoins - priceValue;
                 localStorage.setItem(`pixelCoins_${username}`, newBalance.toString());
                 updatePixelCoins(username);
                 showPurchaseMessage(`¡Has comprado el ${kitName} por ${price} PX!`, true);
                 notifyDiscord(username, kitName, price);
             } else {
-                // Not enough coins
                 showPurchaseMessage(`No tienes suficientes PixelCoins para comprar ${kitName}. Necesitas ${price} PX y tienes ${currentCoins} PX.`, false);
             }
         }
