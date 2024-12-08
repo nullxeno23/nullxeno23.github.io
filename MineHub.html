@@ -362,10 +362,6 @@
             margin-top: 10px;
             z-index: 9999;
             width: 200px;
-            top: 100%; /* Position below the profile picture */
-            left: 50%; /* Center horizontally */
-            transform: translateX(-50%); /* Center adjust */
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
 
         .dropdown-menu a {
@@ -376,7 +372,6 @@
             margin: 5px 0;
             border-radius: 4px;
             transition: background 0.2s;
-            cursor: pointer;
         }
 
         .dropdown-menu a:hover {
@@ -784,6 +779,13 @@
             
             const updates = [
                 {
+                    id: 'mini-reward',
+                    title: "¡Regalo Especial para Mini!",
+                    description: "¡Hey Mini! Tienes 50 PX esperando por ti. ¡Reclámalos ahora!\n\nNOTA: Esta recompensa es exclusiva para el usuario 'Mini' y solo puede ser reclamada una vez.",
+                    date: new Date().toLocaleDateString(),
+                    claimButton: true
+                },
+                {
                     id: 'update1',
                     title: "Minecraft Bedrock 1.20.50",
                     description: "Nueva actualización disponible con mejoras en el rendimiento y corrección de errores.",
@@ -814,6 +816,24 @@
                             `<iframe width="100%" height="315" src="${update.video}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="margin: 15px 0;"></iframe>` 
                             : update.link ? `<a href="${update.link}" target="_blank" class="update-link">Ver más detalles</a>` 
                             : ''}
+                        ${update.claimButton ? `
+                            <button 
+                                onclick="claimMiniReward()" 
+                                class="claim-reward-btn" 
+                                style="
+                                    background: linear-gradient(to bottom right, #c41e3a, #2d4a1c);
+                                    border: none;
+                                    padding: 12px 24px;
+                                    margin-top: 15px;
+                                    border-radius: 8px;
+                                    color: white;
+                                    cursor: pointer;
+                                    font-family: 'Minecraft', 'VT323', monospace;
+                                    box-shadow: 0 0 10px rgba(196, 30, 58, 0.5);
+                                ">
+                                Reclamar 50 PX
+                            </button>
+                        ` : ''}
                         <div class="update-meta">
                             <span class="post-date">📅 Publicado: ${update.date}</span>
                             <button class="reaction-btn" onclick="addReaction('${update.id}')" 
@@ -824,6 +844,38 @@
                     </div>
                 `;
             }).join('');
+        }
+
+        function claimMiniReward() {
+            const username = localStorage.getItem('username');
+            
+            if (username !== 'Mini') {
+                showPurchaseMessage('Esta recompensa es exclusiva para el usuario Mini.', false);
+                return;
+            }
+            
+            const hasClaimedReward = localStorage.getItem('miniRewardClaimed');
+            if (hasClaimedReward) {
+                showPurchaseMessage('¡Ya has reclamado esta recompensa!', false);
+                return;
+            }
+            
+            // Add the reward
+            const currentCoins = parseInt(localStorage.getItem(`pixelCoins_${username}`) || '0');
+            localStorage.setItem(`pixelCoins_${username}`, (currentCoins + 50).toString());
+            
+            // Mark as claimed
+            localStorage.setItem('miniRewardClaimed', 'true');
+            
+            // Update the display
+            updatePixelCoins(username);
+            showPurchaseMessage('¡Has reclamado exitosamente tus 50 PX!', true);
+            
+            // Hide the claim button
+            const claimButton = document.querySelector('.claim-reward-btn');
+            if (claimButton) {
+                claimButton.style.display = 'none';
+            }
         }
 
         function addReaction(postId) {
@@ -879,6 +931,203 @@
             document.getElementById('pixelCoinsDisplay').textContent = `${coins} PX`;
         }
 
+        async function purchaseKit(kitName, price) {
+            const username = localStorage.getItem('username');
+            const currentCoins = parseInt(localStorage.getItem(`pixelCoins_${username}`) || '0');
+            
+            if (price === 'GRATIS') {
+                showPurchaseMessage(`¡Has obtenido el ${kitName} gratuitamente!`, true);
+                notifyDiscord(username, kitName, 'GRATIS');
+                return;
+            }
+            
+            const priceValue = parseInt(price);
+            
+            if (currentCoins >= priceValue) {
+                const newBalance = currentCoins - priceValue;
+                localStorage.setItem(`pixelCoins_${username}`, newBalance.toString());
+                updatePixelCoins(username);
+                showPurchaseMessage(`¡Has comprado el ${kitName} por ${price} PX!`, true);
+                notifyDiscord(username, kitName, price);
+            } else {
+                showPurchaseMessage(`No tienes suficientes PixelCoins para comprar ${kitName}. Necesitas ${price} PX y tienes ${currentCoins} PX.`, false);
+            }
+        }
+
+        function showPurchaseMessage(message, success) {
+            const messageDiv = document.createElement('div');
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: ${success ? 'rgba(76, 175, 80, 0.9)' : 'rgba(244, 67, 54, 0.9)'};
+                color: white;
+                padding: 20px;
+                border-radius: 8px;
+                z-index: 1000;
+                font-family: 'Minecraft', 'VT323', monospace;
+                text-align: center;
+                border: 4px solid var(--minecraft-dirt);
+                box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            `;
+            messageDiv.textContent = message;
+            
+            document.body.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
+        }
+
+        async function notifyDiscord(username, kitName, price) {
+            const webhookUrl = 'https://discord.com/api/webhooks/1315033651913691187/-1zv7GXT1NFk-ySooS-ytwGJnb-G_VQ-U3DQIY7Vv46ELS1ORmavn2lBikxNTgyfkI7j';
+            
+            const message = {
+                content: null,
+                embeds: [{
+                    title: "Nueva Compra de Kit",
+                    description: `**Usuario:** ${username}\n**Kit:** ${kitName}\n**Precio:** ${price}`,
+                    color: 5763719,
+                    timestamp: new Date().toISOString()
+                }]
+            };
+            
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(message)
+                });
+                
+                if (!response.ok) {
+                    console.error('Error sending webhook:', await response.text());
+                }
+            } catch (error) {
+                console.error('Error sending webhook:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('click', function(event) {
+                const dropdown = document.getElementById('dropdownMenu');
+                const profilePic = document.getElementById('profilePic');
+                
+                if (!profilePic.contains(event.target)) {
+                    dropdown.style.display = 'none';
+                }
+            });
+        });
+
+        function toggleDropdown() {
+            const dropdown = document.getElementById('dropdownMenu');
+            if (dropdown.style.display === 'block') {
+                dropdown.style.display = 'none';
+            } else {
+                dropdown.style.display = 'block';
+            }
+        }
+
+        function changePicture() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const profilePicData = event.target.result;
+                    const username = localStorage.getItem('username');
+                    
+                    document.getElementById('profilePic').innerHTML = `
+                        <img src="${profilePicData}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                    `;
+                    
+                    localStorage.setItem('profilePic', profilePicData);
+                    localStorage.setItem(`profilePic_${username}`, profilePicData);
+                    
+                    updateOnlineUsersList();
+                };
+                reader.readAsDataURL(file);
+            };
+            input.click();
+        }
+
+        function showNotifications() {
+            const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+            const username = localStorage.getItem('username');
+            const userNotifications = notifications.filter(n => n.username === username);
+            
+            if (userNotifications.length === 0) {
+                alert('No tienes notificaciones nuevas');
+                return;
+            }
+
+            const dialog = document.createElement('div');
+            dialog.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0, 0, 0, 0.9);
+                padding: 30px;
+                border-radius: 15px;
+                color: white;
+                border: 3px solid #4CAF50;
+                box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+                z-index: 1000;
+                max-width: 500px;
+                width: 90%;
+            `;
+
+            dialog.innerHTML = userNotifications.map(notification => `
+                <div style="margin-bottom: 20px;">
+                    <p style="font-size: 1.2em; margin-bottom: 15px;">${notification.message}</p>
+                    ${!notification.read ? `
+                        <button onclick="markAsRead('${username}')" style="
+                            background: #4CAF50;
+                            color: white;
+                            border: none;
+                            padding: 10px 20px;
+                            border-radius: 5px;
+                            cursor: pointer;
+                            font-family: 'VT323', monospace;
+                            font-size: 1.1em;
+                        ">Mensaje leído</button>
+                    ` : '<p style="color: #4CAF50;">✓ Mensaje leído</p>'}
+                </div>
+            `).join('');
+
+            dialog.innerHTML += `
+                <button onclick="this.parentElement.remove()" style="
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    background: none;
+                    border: none;
+                    color: white;
+                    cursor: pointer;
+                    font-size: 1.5em;
+                ">×</button>
+            `;
+
+            document.body.appendChild(dialog);
+        }
+
+        function markAsRead(username) {
+            const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+            const updatedNotifications = notifications.map(n => {
+                if (n.username === username) {
+                    return { ...n, read: true };
+                }
+                return n;
+            });
+            localStorage.setItem('notifications', JSON.stringify(updatedNotifications));
+            showNotifications(); // Refresh the notifications display
+        }
+
         function login() {
             const usernameInput = document.getElementById('username');
             const passwordInput = document.getElementById('password');
@@ -902,13 +1151,7 @@
             
             // Initialize PixelCoins if new user
             if (!localStorage.getItem(`pixelCoins_${username}`)) {
-                // Give 50 PX to specific users with matching credentials
-                let initialCoins = "0";
-                if ((username === "Ghosty" && password === "Ghosty777") || 
-                    (username === "Mini" && password === "MiniMine-2012")) {
-                    initialCoins = "50";
-                }
-                localStorage.setItem(`pixelCoins_${username}`, initialCoins);
+                localStorage.setItem(`pixelCoins_${username}`, '0');
             }
             
             // Update UI
@@ -964,25 +1207,5 @@
             document.getElementsByClassName('updates-panel')[0].style.display = 'block';
             document.getElementsByClassName('online-users-panel')[0].style.display = 'block';
         }
-
-        // Toggle the dropdown menu
-        function toggleDropdown() {
-            const dropdownMenu = document.getElementById('dropdownMenu');
-            if (dropdownMenu.style.display === 'block') {
-                dropdownMenu.style.display = 'none';
-            } else {
-                dropdownMenu.style.display = 'block';
-            }
-        }
-
-        // Add click event listener to close dropdown when clicking outside
-        document.addEventListener('click', function(event) {
-            const profilePic = document.getElementById('profilePic');
-            const dropdownMenu = document.getElementById('dropdownMenu');
-            
-            if (!profilePic.contains(event.target) && !dropdownMenu.contains(event.target)) {
-                dropdownMenu.style.display = 'none';
-            }
-        });
     </script>
 </body></html>
