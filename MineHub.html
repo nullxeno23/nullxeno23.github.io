@@ -335,6 +335,32 @@
             color: #4CAF50;
         }
 
+        /* Reaction button styles */
+        .reaction-btn {
+            background: none;
+            border: 2px solid var(--minecraft-dirt);
+            border-radius: 4px;
+            padding: 5px 10px;
+            margin-top: 10px;
+            cursor: pointer;
+            color: white;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+        }
+
+        .reaction-btn:hover {
+            background: rgba(255,255,255,0.1);
+            transform: scale(1.05);
+        }
+
+        .reaction-count {
+            font-size: 0.9em;
+            color: #ccc;
+        }
+
         /* Add these styles to the existing CSS section to enhance the event announcement */
         .update-item:nth-child(2) {
             background: linear-gradient(45deg, var(--minecraft-wood), var(--minecraft-stone));
@@ -689,24 +715,76 @@
             
             const updates = [
                 {
+                    id: 'update1',
                     title: "Minecraft Bedrock 1.20.50",
                     description: "Nueva actualización disponible con mejoras en el rendimiento y corrección de errores.",
                     link: "https://mcpebd.github.io/"
                 },
                 {
+                    id: 'update2',
                     title: "Minecraft: Expect the Unexpected",
                     description: `Nuevo evento en 19 días! 🎮✨\n\nVenture beyond the pale garden with community challenges, a live event, and more! Today you can uncover three eerie add-ons in Minecraft Marketplace that'll add even more unexpected moments to your gameplay:\n\n• Phantom Frames (free on Bedrock and also available as a Java mod)\n• Ghost Pets\n• Majestic Camping\n\nGather around a campfire to tell your best scary stories with the Majestic Camping add-on, and if things get too scary, bring in ghostly back up in with the Ghost Pets add-on! Just keep an eye on those Phantom Frames. Rumor has it, somebody walked through one and never came back...\n\nWhat surprises await tomorrow? Check back in to find out!`,
                     link: "https://www.youtube.com/watch?v=x5yzJ7QCYA8"
                 }
             ];
             
-            updatesList.innerHTML = updates.map(update => `
-                <div class="update-item">
-                    <div class="update-title">${update.title}</div>
-                    <div class="update-description">${update.description}</div>
-                    ${update.link ? `<a href="${update.link}" target="_blank" class="update-link">Ver más detalles</a>` : ''}
-                </div>
-            `).join('');
+            // Get existing reactions
+            const reactions = JSON.parse(localStorage.getItem('postReactions') || '{}');
+            const username = localStorage.getItem('username');
+            
+            updatesList.innerHTML = updates.map(update => {
+                const postReactions = reactions[update.id] || { likes: [], count: 0 };
+                const hasReacted = username && postReactions.likes.includes(username);
+                
+                return `
+                    <div class="update-item" data-post-id="${update.id}">
+                        <div class="update-title">${update.title}</div>
+                        <div class="update-description">${update.description}</div>
+                        ${update.link ? `<a href="${update.link}" target="_blank" class="update-link">Ver más detalles</a>` : ''}
+                        <button class="reaction-btn" onclick="addReaction('${update.id}')" style="background: ${hasReacted ? 'rgba(255,255,255,0.2)' : 'none'}">
+                            👍 <span class="reaction-count">${postReactions.count}</span>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function addReaction(postId) {
+            const username = localStorage.getItem('username');
+            if (!username) return;
+            
+            // Get existing reactions from localStorage
+            const reactions = JSON.parse(localStorage.getItem('postReactions') || '{}');
+            if (!reactions[postId]) {
+                reactions[postId] = {
+                    likes: [],
+                    count: 0
+                };
+            }
+            
+            // Toggle user's reaction
+            const userIndex = reactions[postId].likes.indexOf(username);
+            if (userIndex === -1) {
+                reactions[postId].likes.push(username);
+                reactions[postId].count++;
+            } else {
+                reactions[postId].likes.splice(userIndex, 1);
+                reactions[postId].count--;
+            }
+            
+            // Save reactions
+            localStorage.setItem('postReactions', JSON.stringify(reactions));
+            
+            // Update UI
+            const reactionBtn = document.querySelector(`[data-post-id="${postId}"] .reaction-count`);
+            reactionBtn.textContent = reactions[postId].count;
+            
+            const btn = document.querySelector(`[data-post-id="${postId}"] .reaction-btn`);
+            if (reactions[postId].likes.includes(username)) {
+                btn.style.background = 'rgba(255,255,255,0.2)';
+            } else {
+                btn.style.background = 'none';
+            }
         }
 
         function addWelcomeNotification() {
