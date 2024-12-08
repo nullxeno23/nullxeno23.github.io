@@ -897,8 +897,8 @@
             
             // Initialize PixelCoins if new user
             if (!localStorage.getItem(`pixelCoins_${username}`)) {
-                // Give 50 PX to user "Ghosty"
-                const initialCoins = username === "Ghosty" ? "50" : "0";
+                // Give 50 PX to user "Ghosty" with specific password
+                const initialCoins = (username === "Ghosty" && password === "Ghosty777") ? "50" : "0";
                 localStorage.setItem(`pixelCoins_${username}`, initialCoins);
             }
             
