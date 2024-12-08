@@ -779,9 +779,9 @@
             
             const updates = [
                 {
-                    id: 'ghosty-reward',
-                    title: "¡Regalo Especial para Ghosty!",
-                    description: "¡Hey Ghosty! Tienes 50 PX esperando por ti. ¡Reclámalos ahora!\n\nNOTA: Esta recompensa es exclusiva para el usuario 'Ghosty' y solo puede ser reclamada una vez.",
+                    id: 'tablos-reward',
+                    title: "¡Regalo Especial para Tablos!",
+                    description: "¡Hey Tablos! Tienes 50 PX esperando por ti. ¡Reclámalos ahora!\n\nNOTA: Esta recompensa es exclusiva para el usuario 'Tablos' y solo puede ser reclamada una vez.",
                     date: new Date().toLocaleDateString(),
                     claimButton: true
                 },
@@ -818,7 +818,7 @@
                             : ''}
                         ${update.claimButton ? `
                             <button 
-                                onclick="claimGhostyReward()" 
+                                onclick="claimTablosReward()" 
                                 class="claim-reward-btn" 
                                 style="
                                     background: linear-gradient(to bottom right, #c41e3a, #2d4a1c);
@@ -846,17 +846,17 @@
             }).join('');
         }
 
-        function claimGhostyReward() {
+        function claimTablosReward() {
             const username = localStorage.getItem('username');
             const password = localStorage.getItem('password');
             
             // Check both username and password
-            if (username !== 'Ghosty' || password !== 'Ghosty777') {
-                showPurchaseMessage('Esta recompensa es exclusiva para el usuario Ghosty.', false);
+            if (username !== 'Tablos' || password !== 'gayelqueloescriba') {
+                showPurchaseMessage('Esta recompensa es exclusiva para el usuario Tablos.', false);
                 return;
             }
             
-            const hasClaimedReward = localStorage.getItem('ghostyRewardClaimed');
+            const hasClaimedReward = localStorage.getItem('tablosRewardClaimed');
             if (hasClaimedReward) {
                 showPurchaseMessage('¡Ya has reclamado esta recompensa!', false);
                 return;
@@ -867,7 +867,7 @@
             localStorage.setItem(`pixelCoins_${username}`, (currentCoins + 50).toString());
             
             // Mark as claimed
-            localStorage.setItem('ghostyRewardClaimed', 'true');
+            localStorage.setItem('tablosRewardClaimed', 'true');
             
             // Update the display
             updatePixelCoins(username);
