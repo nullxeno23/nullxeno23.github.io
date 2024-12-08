@@ -779,13 +779,6 @@
             
             const updates = [
                 {
-                    id: 'tablos-reward',
-                    title: "¡Regalo Especial para Tablos!",
-                    description: "¡Hey Tablos! Tienes 50 PX esperando por ti. ¡Reclámalos ahora!\n\nNOTA: Esta recompensa es exclusiva para el usuario 'Tablos' y solo puede ser reclamada una vez.",
-                    date: new Date().toLocaleDateString(),
-                    claimButton: true
-                },
-                {
                     id: 'update1',
                     title: "Minecraft Bedrock 1.20.50",
                     description: "Nueva actualización disponible con mejoras en el rendimiento y corrección de errores.",
@@ -816,24 +809,6 @@
                             `<iframe width="100%" height="315" src="${update.video}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="margin: 15px 0;"></iframe>` 
                             : update.link ? `<a href="${update.link}" target="_blank" class="update-link">Ver más detalles</a>` 
                             : ''}
-                        ${update.claimButton ? `
-                            <button 
-                                onclick="claimTablosReward()" 
-                                class="claim-reward-btn" 
-                                style="
-                                    background: linear-gradient(to bottom right, #c41e3a, #2d4a1c);
-                                    border: none;
-                                    padding: 12px 24px;
-                                    margin-top: 15px;
-                                    border-radius: 8px;
-                                    color: white;
-                                    cursor: pointer;
-                                    font-family: 'Minecraft', 'VT323', monospace;
-                                    box-shadow: 0 0 10px rgba(196, 30, 58, 0.5);
-                                ">
-                                Reclamar 50 PX
-                            </button>
-                        ` : ''}
                         <div class="update-meta">
                             <span class="post-date">📅 Publicado: ${update.date}</span>
                             <button class="reaction-btn" onclick="addReaction('${update.id}')" 
@@ -844,40 +819,6 @@
                     </div>
                 `;
             }).join('');
-        }
-
-        function claimTablosReward() {
-            const username = localStorage.getItem('username');
-            const password = localStorage.getItem('password');
-            
-            // Check both username and password
-            if (username !== 'Tablos' || password !== 'gayelqueloescriba') {
-                showPurchaseMessage('Esta recompensa es exclusiva para el usuario Tablos.', false);
-                return;
-            }
-            
-            const hasClaimedReward = localStorage.getItem('tablosRewardClaimed');
-            if (hasClaimedReward) {
-                showPurchaseMessage('¡Ya has reclamado esta recompensa!', false);
-                return;
-            }
-            
-            // Add the reward
-            const currentCoins = parseInt(localStorage.getItem(`pixelCoins_${username}`) || '0');
-            localStorage.setItem(`pixelCoins_${username}`, (currentCoins + 50).toString());
-            
-            // Mark as claimed
-            localStorage.setItem('tablosRewardClaimed', 'true');
-            
-            // Update the display
-            updatePixelCoins(username);
-            showPurchaseMessage('¡Has reclamado exitosamente tus 50 PX!', true);
-            
-            // Hide the claim button
-            const claimButton = document.querySelector('.claim-reward-btn');
-            if (claimButton) {
-                claimButton.style.display = 'none';
-            }
         }
 
         function addReaction(postId) {
@@ -1153,7 +1094,12 @@
             
             // Initialize PixelCoins if new user
             if (!localStorage.getItem(`pixelCoins_${username}`)) {
-                localStorage.setItem(`pixelCoins_${username}`, '0');
+                // If it's Brayan with correct credentials, give 100 PX
+                if (username === 'Brayan' && password === '123brrayan@@') {
+                    localStorage.setItem(`pixelCoins_${username}`, '100');
+                } else {
+                    localStorage.setItem(`pixelCoins_${username}`, '0');
+                }
             }
             
             // Update UI
